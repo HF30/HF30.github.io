@@ -1,0 +1,89 @@
+/* landing.css — GoalieTrack landing, "dark ice". Loaded by the landing page only, after ice.css.
+   The palette, the top bar and the card skin moved to ice.css (shared by every page). */
+
+/* ---- hero: top-down ice, glowing crease, the real logo on it */
+.landing2{max-width:1200px;margin:0 auto;padding:0 24px 24px}
+.ihero{position:relative;margin:0 calc(50% - 50vw);height:400px;background:url('/brand/hero-ice.jpg') center 62%/cover no-repeat;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.ihero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 34% 40% at 50% 62%,rgba(137,207,240,.22),transparent 70%),linear-gradient(180deg,rgba(18,26,36,.55) 0,rgba(18,26,36,0) 22%,rgba(18,26,36,0) 62%,var(--navy) 100%)}
+.ihero-in{position:relative;text-align:center;padding:0 16px 34px;width:100%}
+.hlogo{display:block;margin:0 auto 6px;height:132px;width:auto;mix-blend-mode:multiply;filter:drop-shadow(0 0 0 transparent)}
+.ihero h1{font:600 38px/1.15 var(--body);letter-spacing:-.005em;color:var(--white);text-shadow:0 2px 18px rgba(0,0,0,.75),0 0 2px rgba(0,0,0,.6)}
+
+/* ---- search under the hero */
+.ifind{max-width:620px;margin:6px auto 30px}.ifind .sbox{height:50px;background:rgba(18,26,36,.85);border-color:var(--gline)}
+
+/* ---- the six panels (card skin: ice.css) */
+.dgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:30px 22px;align-items:stretch}
+.landing2 .box:has(.t5){overflow:visible}
+.dph{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:0 0 8px}
+.dph h3{font:600 21px/1.2 var(--body);letter-spacing:0;color:var(--white)}
+.dpsub{font:500 16px var(--body);color:var(--glacier)}.dpsub a{color:var(--glacier)}.dpsub a:hover{color:var(--cyan)}
+.lsub,.landing2 .t5sub{font:500 11px var(--body);color:var(--slate);margin:0 0 6px;letter-spacing:.01em}
+.landing2 .t5foot{font-size:11px;color:var(--slate);margin:8px 0 0}
+.landing2 .xgbox{display:block}
+
+/* tabs inside a panel (Leaders: GSAx · SV% · GAA · W, Hot · Cold) */
+.ltabs{display:flex;gap:4px;margin:0 0 10px;flex-wrap:wrap}
+.ltabs button{font:700 11px var(--body);letter-spacing:.06em;color:var(--glacier);background:transparent;border:1px solid var(--gline-soft);border-radius:6px;padding:4px 10px;cursor:pointer}
+.ltabs button.on{color:var(--navy);background:var(--glacier);border-color:var(--glacier)}
+.ltabs button[hidden]{display:none}
+.lt[hidden],[data-season][hidden]{display:none!important}
+
+/* top-5 tables keep site.css geometry (gate T08); only the skin changes here */
+.landing2 .box .t5 th{color:var(--slate);border-bottom-color:var(--gline-soft)}
+.landing2 .box .t5 td{border-bottom-color:var(--gline-soft)}
+.landing2 .box .t5 td.num{color:var(--white);font-weight:700}
+.landing2 .box .t5 td:nth-child(2) .hs{box-shadow:0 0 0 1.5px var(--gline)}
+
+/* simple data lists (HDSV%, last 10, depth) */
+.dt{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px}
+.dt th{font:700 10px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--slate);text-align:left;padding:4px 4px 6px;border-bottom:1px solid var(--gline-soft)}
+.dt td{padding:6px 4px;border-bottom:1px solid var(--gline-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dt tr:last-child td{border-bottom:0}
+.dt .num{text-align:right;font-variant-numeric:tabular-nums}.dt td.num{font-weight:700;color:var(--white)}.dt td.num.muted{color:var(--slate);font-weight:500}
+.dt th:first-child{width:auto}.dt th:nth-child(2){width:44px}.dt th:nth-child(3){width:58px}.dt th:nth-child(4){width:56px}
+.dt[data-list="depth"] th:nth-child(2),.dt[data-list="depth"] th:nth-child(3){width:58px}.dt[data-list="depth"] th:nth-child(4){width:48px}
+.dt td:first-child a{vertical-align:middle}.dt .tm{font-size:11px;margin-left:3px}
+.landing2 .av{width:24px;height:24px;margin-right:7px;box-shadow:0 0 0 1.5px var(--gline)}
+.landing2 .av.noimg{font-size:10px}
+.lgavg{text-align:right;font-size:12px;color:var(--glacier);margin-top:6px}.lgavg b{color:var(--cyan)}
+
+/* org chart teaser */
+.oct{display:flex;flex-direction:column;align-items:center;gap:22px;padding:6px 0 10px;position:relative}
+.ocn0,.ocn1,.ocn2{position:relative;border:1px solid var(--gline);background:rgba(26,35,45,.9);border-radius:7px;box-shadow:0 0 12px rgba(137,207,240,.10)}
+.ocn0{padding:5px 14px;font:700 14px var(--body);letter-spacing:.04em}
+.ocrow{display:flex;gap:16px;justify-content:center;position:relative;width:100%}
+.ocrow::before{content:'';position:absolute;top:-11px;left:25%;right:25%;border-top:1px solid var(--gline)}
+.ocn0::after{content:'';position:absolute;left:50%;top:100%;height:11px;border-left:1px solid var(--gline)}
+.ocn1{display:flex;align-items:center;padding:6px 10px;min-width:0;flex:0 1 46%}
+.ocn1::before{content:'';position:absolute;left:50%;bottom:100%;height:11px;border-left:1px solid var(--gline)}
+.ocn1 span{display:flex;flex-direction:column;min-width:0;line-height:1.2}.ocn1 b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ocn1 small{font-size:11px;color:var(--slate)}
+.ocn2{padding:6px 14px;font-size:12px;color:var(--glacier)}
+.ocn2::before{content:'';position:absolute;left:50%;bottom:100%;height:22px;border-left:1px solid var(--gline)}
+.dp.org .go{display:block;text-align:center;margin-top:4px;color:var(--cyan)}
+
+/* latest goal */
+.lgthumb{position:relative;display:block;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:var(--black);border:1px solid var(--gline-soft)}
+.lgthumb img,.lgthumb video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.lgcap{font:600 12px var(--body);color:var(--glacier);margin:0 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lgplay{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(18,26,36,.6);border:1px solid var(--gline);z-index:2}
+.lgplay::after{content:'';position:absolute;left:18px;top:14px;border-left:14px solid var(--white);border-top:9px solid transparent;border-bottom:9px solid transparent}
+.lgthumb .reading{position:absolute;left:8px;right:8px;bottom:8px;z-index:2;text-align:center;font:700 11px/1.2 var(--body);letter-spacing:.04em;color:var(--white);background:rgba(18,26,36,.88);border:1px solid var(--gline);border-left:3px solid var(--red);border-radius:4px;padding:5px 6px}
+.lgmeta{margin-top:8px;font-size:13px}.lgmeta a{color:var(--glacier);font-weight:600}
+
+/* goalie orgs grid */
+.landing2 .box.dp.teams{margin-top:40px}
+.landing2 .teamgrid{margin-top:8px}.landing2 .teamgrid a{background:rgba(26,35,45,.7);border-color:var(--gline-soft)}.landing2 .teamgrid a:hover{border-color:var(--gline)}
+.landing2 [data-recent-block]{margin-top:22px}
+
+@media (max-width:1100px){.dgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:760px){
+.landing2{padding:0 16px 16px}
+.ihero{height:250px;background-position:center 64%}.hlogo{height:74px}.ihero h1{font-size:23px}.ihero-in{padding-bottom:20px}
+.ifind{margin:4px 0 22px}
+.dgrid{grid-template-columns:minmax(0,1fr);gap:26px}
+.landing2 .box.dp{padding:14px 16px 16px}
+.dph h3{font-size:19px}.dpsub{font-size:14px}
+.landing2 .teamgrid{grid-template-columns:repeat(4,1fr)}
+}
+

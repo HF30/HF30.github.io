@@ -1,0 +1,150 @@
+/* ice.css — GoalieTrack "dark ice" site stylesheet, shared by EVERY page (landing, team/org, goalie).
+   Loaded after site.css + statsorg.css; landing.css (landing only) loads after this.
+   Palette: navy var(--surface) fading darker · glacier var(--accent) · cyan var(--accent) · red var(--bad) (tiny accents). */
+:root{--navy:var(--surface);--navy-deep:var(--bg);--glacier:var(--accent);--cyan:var(--accent);--red:var(--bad);
+--card-top:var(--surface-2);--card-bot:var(--surface);--gline:rgba(137,207,240,.55);--gline-soft:rgba(137,207,240,.16)}
+body.ice{background:linear-gradient(180deg,var(--navy) 0%,var(--surface) 45%,var(--navy-deep) 100%);background-color:var(--navy-deep);min-height:100vh;color:var(--ink);overflow-x:hidden}
+html{background:var(--navy-deep)}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---- top bar (every page) */
+body.ice .side{position:sticky;top:0;z-index:30;display:flex;flex-direction:row;border-right:0;overflow:visible;align-items:center;gap:28px;padding:0 max(24px,calc((100vw - 1200px)/2));height:66px;background:rgba(18,26,36,.94);border-bottom:1px solid var(--gline-soft);backdrop-filter:blur(8px)}
+body.ice .side .ilogo{display:block;flex:none;line-height:0}body.ice .side .ilogo img{height:44px;width:auto;display:block}
+body.ice .side nav{display:flex;flex-direction:row;gap:26px;flex:1;min-width:0}body.ice .side nav a{padding:0;border-radius:0;background:none;color:var(--glacier);font:500 16px var(--body);letter-spacing:.01em;white-space:nowrap}body.ice .side nav a:hover{color:var(--cyan)}
+.ssel select{appearance:none;-webkit-appearance:none;background:rgba(26,35,45,.9) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0h10L5 6z' fill='%239CC9E6'/%3E%3C/svg%3E") no-repeat right 12px center;color:var(--ink);font:600 15px var(--body);border:1px solid var(--gline);border-radius:8px;padding:8px 32px 8px 14px;cursor:pointer}
+body.ice .main{padding:0;min-width:0}
+
+/* ---- cards: dark frosted glass, thin glacier border, angled tab corner */
+body.ice .box{position:relative;margin-top:11px;background:linear-gradient(180deg,var(--card-top),var(--card-bot));border:1px solid var(--gline);border-radius:10px;border-top-right-radius:0;padding:14px 18px 16px;box-shadow:0 0 0 1px rgba(137,207,240,.05),0 0 22px rgba(137,207,240,.10),0 14px 34px rgba(0,0,0,.45),inset 0 1px 0 rgba(137,207,240,.12);min-width:0}
+body.ice .box::before{content:'';position:absolute;top:-12px;right:-1px;width:38%;height:13px;background:var(--gline);clip-path:polygon(0 100%,14px 0,100% 0,100% 100%);border-top-right-radius:8px}
+body.ice .box::after{content:'';position:absolute;top:-11px;right:0;width:calc(38% - 1px);height:13px;background:var(--card-top);clip-path:polygon(1.4px 100%,14.6px 0,100% 0,100% 100%);border-top-right-radius:7px}
+
+@media (max-width:1100px){body.ice .side nav{gap:18px}}
+@media (max-width:760px){
+body.ice .side{display:flex;height:auto;flex-wrap:wrap;gap:8px 14px;padding:10px 16px}body.ice .side .ilogo img{height:34px}
+body.ice .side nav{order:3;flex-basis:100%;gap:22px}body.ice .side nav a{font-size:14px}.ssel{margin-left:auto}.ssel select{font-size:13px;padding:6px 28px 6px 10px}
+}
+
+/* ================================================================ inner pages (team / org, goalie): body.ice.inner */
+body.ice.inner{--bad:var(--bad);--panel:var(--surface-2);--panel2:var(--surface-2);--mid:var(--line);--sky:var(--accent);--line:var(--gline-soft)}
+body.ice.inner .page{max-width:1200px;margin:0 auto;padding:22px 24px 48px}
+body.ice .side .tsearch{flex:none;width:320px;margin-left:auto}
+body.ice .side .tsearch .sbox{height:40px;background:rgba(18,26,36,.85);border-color:var(--gline);border-radius:8px;padding:0 12px}
+body.ice .side .tsearch .sbox input{font-size:14px}body.ice .side .tsearch .sbox svg{stroke:var(--glacier);width:18px;height:18px}
+body.ice .side .tsearch .dd{top:46px;background:var(--surface-2);border-color:var(--gline)}
+.crumbs{display:flex;flex-wrap:wrap;gap:8px;font:500 13px var(--body);color:var(--glacier);margin:0 0 16px}
+.crumbs a{color:var(--glacier)}.crumbs a:hover{color:var(--cyan)}.crumbs a+a::before{content:'›';color:var(--slate);margin-right:8px}.crumbs a.on{color:var(--white)}
+body.ice.inner h1,body.ice.inner h2,body.ice.inner h3{font-family:var(--body);font-weight:600;letter-spacing:-.005em;color:var(--white)}
+
+/* card heads read like the landing panel titles */
+body.ice.inner .boxh{margin:0 0 12px;padding:0;border:0;text-align:left;font:600 19px/1.25 var(--body);letter-spacing:0;text-transform:none;color:var(--white)}
+body.ice.inner .boxh small{font-weight:500}
+body.ice.inner .mh{color:var(--glacier);letter-spacing:.1em}
+body.ice.inner .src,body.ice.inner .lbl,body.ice.inner .muted{color:var(--slate)}
+body.ice.inner .chip-r{background:rgba(137,207,240,.08);color:var(--cyan);border-color:rgba(137,207,240,.35)}
+
+/* goalie / team header */
+body.ice.inner .ph{border-bottom:1px solid var(--gline-soft);padding-bottom:16px}
+body.ice.inner .ph img,body.ice.inner .ph .noimg{border:2px solid var(--gline);box-shadow:0 0 0 4px rgba(137,207,240,.08),0 0 24px rgba(137,207,240,.18);background:var(--card-top)}
+body.ice.inner .ph .noimg{font:600 40px var(--body)}
+body.ice.inner .ph h1{font-size:42px;line-height:1.05}
+body.ice.inner .ph .mh{color:var(--glacier)}body.ice.inner .ph .mh::before{content:'';display:inline-block;width:14px;height:3px;background:var(--red);border-radius:1px;margin-right:8px;vertical-align:3px}
+body.ice.inner .ph .meta{color:var(--glacier)}body.ice.inner .ph .meta b{color:var(--white)}
+body.ice.inner .cbtline{margin:12px 0 0;color:var(--slate)}body.ice.inner .cbtline b{color:var(--white)}
+body.ice.inner .th .tlogo{background:var(--card-top);border:2px solid var(--gline);box-shadow:0 0 24px rgba(137,207,240,.18)}
+body.ice.inner .th .thin{color:var(--glacier)}
+
+/* tabs: glacier labels, cyan underline on the open tab */
+body.ice.inner .tabs{border-bottom:1px solid var(--gline-soft);margin:16px 0 20px;scrollbar-width:none}
+body.ice.inner .tabs a{color:var(--glacier);font:600 12px var(--body);letter-spacing:.1em}
+body.ice.inner .tabs a:hover{color:var(--cyan)}
+body.ice.inner .tabs a.on{color:var(--white);border-color:var(--cyan)}
+
+/* top tiles strip */
+body.ice.inner .strip{border:1px solid var(--gline);border-radius:10px;background:linear-gradient(180deg,var(--card-top),var(--card-bot));box-shadow:0 0 22px rgba(137,207,240,.10),0 14px 34px rgba(0,0,0,.4);margin-bottom:14px}
+body.ice.inner .strip>div{background:transparent;border-right:1px solid var(--gline-soft)}
+body.ice.inner .strip span{color:var(--glacier)}
+body.ice.inner .strip b{font:700 26px/1.15 var(--body);color:var(--white);font-variant-numeric:tabular-nums}
+body.ice.inner .tile,body.ice.inner .gb>div{background:rgba(26,35,45,.7);border:1px solid var(--gline-soft);border-radius:8px}
+body.ice.inner .tv{font:700 26px/1.2 var(--body);color:var(--white);font-variant-numeric:tabular-nums}
+body.ice.inner .tl{color:var(--glacier)}
+
+/* light pages (AHL / ECHL / prospect / no line): the strip holds only the cells it has */
+body.ice.inner .so-solo .strip{grid-template-columns:repeat(auto-fit,minmax(150px,240px));width:fit-content;max-width:100%}
+
+/* tables */
+body.ice.inner .tbl th{color:var(--slate);border-bottom-color:var(--gline-soft)}
+body.ice.inner .tbl td{border-bottom-color:var(--gline-soft);font-variant-numeric:tabular-nums}
+body.ice.inner .tbl tr:last-child td{border-bottom:0}
+body.ice.inner .tbl td b{color:var(--white)}
+body.ice.inner .dec.W{background:rgba(137,207,240,.14);color:var(--cyan)}body.ice.inner .dec.L,body.ice.inner .dec.O{background:rgba(240,82,66,.16);color:var(--bad-text)}
+body.ice.inner a.cl,body.ice.inner .go{color:var(--cyan)}
+body.ice.inner .bars .bar i{background:var(--cyan)}
+
+/* overview: expected goals + chance danger side by side; tab grids */
+.ov2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:22px;align-items:start}
+.advg{display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
+.career{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:22px;align-items:start}
+body.ice.inner .so-sec{margin-top:11px}body.ice.inner .so-depth{margin-top:0}
+body.ice.inner .ov2>.box,body.ice.inner .advg>.box,body.ice.inner .career>.box,body.ice.inner .career>div>.box{margin-top:11px}
+.dgseason+.dgseason{margin-top:14px}
+.dgt td:first-child{white-space:nowrap}.dgt td small{font-size:11px;margin-left:4px}
+.dgb{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:8px;vertical-align:0}
+.dgb.b0{background:rgba(137,207,240,.45)}.dgb.b1{background:var(--glacier)}.dgb.b2{background:var(--cyan)}.dgb.b3{background:var(--red)}
+
+/* org chart */
+body.ice.inner .so-chart{margin:11px 0 18px}
+body.ice.inner .so-tiers::before,body.ice.inner .so-tier::before{background:var(--gline-soft)}
+body.ice.inner .so-tier::after{background:var(--cyan);box-shadow:0 0 8px rgba(137,207,240,.5)}
+body.ice.inner .so-tl{color:var(--glacier)}
+body.ice.inner .so-card{background:rgba(26,35,45,.85);border-color:var(--gline-soft);box-shadow:0 0 12px rgba(137,207,240,.06)}
+body.ice.inner .so-card:hover{border-color:var(--gline);background:rgba(36,49,66,.92)}
+body.ice.inner .so-card.t-nhl{border-left:3px solid var(--cyan)}
+body.ice.inner .so-hs{border-color:var(--gline-soft)}
+body.ice.inner .so-role.r-starter{background:var(--cyan);color:var(--navy)}body.ice.inner .so-role.r-backup{border-color:var(--glacier);color:var(--glacier)}
+
+/* shot map / clips / filters / coach */
+body.ice.inner .f{background:rgba(26,35,45,.85);border-color:var(--gline-soft)}body.ice.inner .f.on{background:var(--glacier);border-color:var(--glacier);color:var(--navy)}
+body.ice.inner .clip{background:linear-gradient(180deg,var(--card-top),var(--card-bot));border-color:var(--gline-soft)}
+body.ice.inner .cm .tags em{background:rgba(26,35,45,.9);border-color:var(--gline-soft)}
+body.ice.inner .coach{border-color:var(--gline);background:linear-gradient(180deg,var(--card-top),var(--card-bot))}
+body.ice.inner .coach-h b,body.ice.inner .coach-cta b{font-family:var(--body);font-weight:600}
+body.ice.inner .btn{background:var(--cyan);color:var(--navy)}
+body.ice.inner .rink .spot{fill:var(--glacier)}
+
+@media (max-width:760px){
+body.ice.inner .side nav{order:0;flex:1 1 auto;flex-basis:auto;justify-content:flex-end;gap:18px}
+body.ice .side .tsearch{order:4;flex-basis:100%;width:auto;margin:0}
+body.ice.inner .page{padding:14px 16px 32px}
+body.ice.inner .ph h1{font-size:30px}
+body.ice.inner .strip b{font-size:22px}
+.career{grid-template-columns:minmax(0,1fr)}
+.ov2{grid-template-columns:minmax(0,1fr)}
+body.ice.inner .box{padding:14px 16px 16px}
+.dgt td small{display:block;margin:2px 0 0 17px}
+body.ice.inner .so-solo .strip{grid-template-columns:repeat(2,minmax(0,1fr));width:auto}
+}
+
+/* frosted-glass org cards + /leagues cards (dark-ice look; layout + sizes in statsorg.css) */
+body.ice.inner .org-card,body.ice.inner .lg-card{background:linear-gradient(160deg,rgba(69,81,96,.42),rgba(26,35,45,.62));border-color:var(--gline-soft);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:inset 0 1px 0 rgba(137,207,240,.18),0 10px 28px rgba(0,0,0,.35)}
+body.ice.inner .org-card:hover{border-color:var(--gline);box-shadow:inset 0 1px 0 rgba(137,207,240,.28),0 0 22px rgba(137,207,240,.18),0 12px 30px rgba(0,0,0,.4)}
+body.ice.inner .org-card.t-nhl{border-left:3px solid var(--cyan)}
+body.ice.inner .org-card.t-junior,body.ice.inner .org-card.t-college,body.ice.inner .org-card.t-europe,body.ice.inner .org-card.t-other{background:linear-gradient(160deg,rgba(69,81,96,.28),rgba(26,35,45,.5))}
+body.ice.inner .oc-photo{border-color:var(--gline);box-shadow:0 0 16px rgba(137,207,240,.18);background:var(--card-top)}
+body.ice.inner .oc-nm,body.ice.inner .oc-tv,body.ice.inner .lg-card h2{color:var(--white)}
+body.ice.inner .oc-level,body.ice.inner .oc-bio,body.ice.inner .oc-num,body.ice.inner .oc-sl,body.ice.inner .oc-tl,body.ice.inner .oc-cl,body.ice.inner .lg-sub,body.ice.inner .lg-intro{color:var(--glacier)}
+body.ice.inner .oc-tile,body.ice.inner .oc-chip{background:rgba(26,35,45,.7);border-color:var(--gline-soft)}
+body.ice.inner .oc-form.hot{border-color:var(--cyan)}body.ice.inner .oc-form.hot b{color:var(--cyan)}
+body.ice.inner .oc-form.cold{border-color:var(--red)}body.ice.inner .oc-form.cold b{color:var(--red)}
+body.ice.inner .oc-yr{background:var(--gline-soft)}body.ice.inner .oc-yr.on{background:var(--cyan);box-shadow:0 0 6px rgba(137,207,240,.5)}
+body.ice.inner .so-role.r-prospect{border-color:var(--gline-soft);color:var(--glacier)}
+body.ice.inner .lg-card[data-status="live"]{border-color:var(--gline);box-shadow:inset 0 1px 0 rgba(137,207,240,.28),0 0 26px rgba(137,207,240,.2),0 12px 30px rgba(0,0,0,.4)}
+body.ice.inner .lg-names span,body.ice.inner .lg-soon{border-color:var(--gline-soft)}body.ice.inner .lg-soon{color:var(--glacier)}
+body.ice.inner .lg-links a{border-color:var(--gline);color:var(--cyan)}body.ice.inner .lg-links a:hover{background:rgba(137,207,240,.12)}
+
+/* goalie page season dropdown */
+.gsel{margin:0 0 12px}.gsel .ssel{margin-left:0;display:inline-flex;align-items:center;gap:8px}.gsel .gslab{font:600 12px var(--body,sans-serif);opacity:.75;text-transform:uppercase;letter-spacing:.06em}
+.dgseason[hidden]{display:none}
+/* season blocks of the goalie page; the select (app.mjs) flips data-gs-off */
+[data-gs-off]{display:none!important}
+.gsline{margin:6px 0 0;font-size:12px}

@@ -1,0 +1,31 @@
+/* launch.css — goals-only free launch. Dark-ice tokens only (tokens.css). */
+.gt-shots-soon{border:1px dashed var(--line);border-radius:12px;background:linear-gradient(180deg,var(--surface),var(--surface-deep));padding:22px 22px 20px;display:grid;gap:10px;max-width:46rem}
+.gt-shots-soon .gs-k{font:700 12px var(--body,system-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.gt-shots-soon h3{margin:0;font:400 26px var(--disp,inherit);color:var(--ink)}
+.gt-shots-soon p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+.gt-shots-soon [data-gt-waitlist]{margin-top:6px}
+.gt-review{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 18px;margin:16px 0}
+.gt-review b{font:600 15px var(--body,system-ui);color:var(--ink);display:block}
+.gt-review span{color:var(--muted);font-size:13px}
+.gt-btn{display:inline-block;background:var(--accent);color:var(--on-accent);font:700 13px var(--body,system-ui);padding:10px 22px;border-radius:999px;text-decoration:none;letter-spacing:.02em}
+.gt-btn:hover{filter:brightness(1.1)}
+.gt-btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.gt-page{max-width:52rem;margin:0 auto;padding:32px 24px 24px;box-sizing:border-box}
+.gt-page h1{font:400 40px var(--disp,inherit);margin:0 0 6px;color:var(--ink)}
+.gt-page .lede{color:var(--muted);font-size:16px;line-height:1.55;margin:0 0 22px}
+.gt-offers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.gt-offer{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:20px;display:grid;gap:8px;align-content:start}
+.gt-offer h2{margin:0;font:400 24px var(--disp,inherit);color:var(--ink)}
+.gt-offer .price{font:700 20px var(--body,system-ui);color:var(--accent)}
+.gt-offer p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+.gt-offer .gt-btn{justify-self:start;margin-top:6px}
+.gt-foot{border-top:1px solid var(--line);margin:32px auto 0;padding:18px 24px 28px;display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;justify-content:space-between;color:var(--muted);font-size:13px}
+.gt-foot nav{display:flex;flex-wrap:wrap;gap:8px 18px}
+.gt-foot a{color:var(--ink);text-decoration:none}
+.gt-foot a:hover{color:var(--accent)}
+@media (max-width:640px){.gt-offers{grid-template-columns:1fr}.gt-page h1{font-size:32px}.gt-foot{padding:16px}}
+.dp[hidden]{display:none!important}
+.gt-early-wrap{margin:28px auto 8px;padding:0 24px;display:grid;gap:6px;max-width:46rem;box-sizing:border-box}
+.gt-early-wrap h3{margin:0;font:400 24px var(--disp,inherit);color:var(--ink)}
+.gt-early-wrap p{margin:0 0 8px;color:var(--muted);font-size:14px}
+body.ice .side nav{gap:20px;overflow-x:auto;scrollbar-width:none}body.ice .side nav::-webkit-scrollbar{display:none}

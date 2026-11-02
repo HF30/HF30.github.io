@@ -1,0 +1,9 @@
+{
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/live/stills.json",
+      "destination": "https://pub-98c1f67ac31747d299999064688d944b.r2.dev/live/stills.json"
+    }
+  ]
+}

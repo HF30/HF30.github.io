@@ -1,0 +1,147 @@
+/* statsorg.css — org chart + stat lines + shot zones. Palette P2 tokens only: no colour literal in this file. */
+@import url('/tokens.css');
+
+/* ---- shared sections on the goalie page */
+.so-sec { margin-top: 16px; }
+.so-sec .tblwrap { overflow-x: auto; max-width: 100%; }
+.so-lines th, .so-lines td, .so-zones th, .so-zones td { white-space: nowrap; }
+.so-s { font-variant-numeric: tabular-nums; color: var(--muted); }
+.so-tm { font-size: 11px; }
+.so-src { white-space: nowrap; }
+.so-src .n { display: inline; margin: 0 6px 0 0; }
+.so-none { padding: 6px 0; color: var(--muted); }
+.so-depth { margin-top: 16px; }
+.so-solo-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: 16px; }
+.so-solo .strip { margin-top: 16px; }
+
+/* ---- org chart */
+.so-chart { margin: 0 0 18px; }
+.so-chart .boxh small { text-transform: none; letter-spacing: 0; font-weight: 500; margin-left: 8px; color: var(--muted); }
+.so-tiers { position: relative; display: grid; gap: 14px; padding-left: 18px; min-width: 0; }
+.so-tiers::before { content: ''; position: absolute; left: 5px; top: 8px; bottom: 8px; width: 2px; background: var(--line); border-radius: 2px; }
+.so-tier { position: relative; min-width: 0; }
+.so-tier::before { content: ''; position: absolute; left: -13px; top: 10px; width: 13px; height: 2px; background: var(--line); }
+.so-tier::after { content: ''; position: absolute; left: -18px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.so-tier[data-tier="ahl"]::after { background: var(--tier-ahl); }
+.so-tier[data-tier="echl"]::after { background: var(--tier-echl); }
+.so-tier[data-tier="junior"]::after, .so-tier[data-tier="college"]::after, .so-tier[data-tier="europe"]::after, .so-tier[data-tier="other"]::after { background: var(--muted); }
+.so-th { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+.so-tl { font-weight: 700; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.so-th .n { display: inline; margin: 0; }
+.so-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 10px; min-width: 0; }
+.so-card { display: flex; gap: 10px; align-items: flex-start; min-width: 0; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); color: var(--ink); text-decoration: none; }
+.so-card:hover { border-color: var(--accent); background: var(--surface-3); }
+.so-card.t-nhl { border-left: 3px solid var(--accent); }
+.so-card.t-ahl { border-left: 3px solid var(--tier-ahl); }
+.so-card.t-echl { border-left: 3px solid var(--tier-echl); }
+.so-hs { width: 44px; height: 44px; border-radius: 50%; flex: none; object-fit: cover; border: 2px solid var(--line); background: var(--surface-deep); }
+.so-noimg { display: grid; place-items: center; color: var(--muted); font-weight: 700; }
+.so-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; overflow-wrap: anywhere; }
+.so-nm { font-weight: 700; font-size: 14px; line-height: 1.2; }
+.so-club, .so-meta { font-size: 11px; color: var(--muted); line-height: 1.3; }
+.so-stat { font-size: 11px; color: var(--ink); margin-top: 2px; }
+.so-role { align-self: flex-start; font-weight: 700; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; padding: 2px 6px; border-radius: 3px; background: var(--surface-3); color: var(--ink); }
+.so-role.r-starter { background: var(--accent); color: var(--on-accent); }
+.so-role.r-backup { border: 1px solid var(--accent); background: transparent; color: var(--accent); }
+
+@media (max-width: 640px) {
+  .so-tiers { padding-left: 14px; }
+  .so-tier::after { left: -14px; }
+  .so-tier::before { left: -9px; width: 9px; }
+  .so-tiers::before { left: 3px; }
+  .so-cards { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---- landing top-5 tables: rank | goalie | team | value | sample ---- */
+[hidden] { display: none !important; }
+.t5sub { color: var(--muted); font-size: 12px; margin: 2px 0 10px; }
+.t5foot { color: var(--muted); font-size: 12px; margin: 12px 0 0; }
+.t5 { width: 100%; table-layout: fixed; border-collapse: collapse; margin: 0 0 14px; }
+.t5 th, .t5 td { padding: 8px 6px; text-align: left; vertical-align: middle; border-bottom: 1px solid var(--line-soft); overflow: hidden; }
+.t5 th { color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+.t5 .c-rk { width: 26px; }
+.t5 .c-t { width: 46px; }
+.t5 .c-v { width: 62px; }
+.t5 .c-n { width: 82px; }
+.t5 td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; line-height: 1.25; }
+.t5 td:nth-child(2) .hs { display: inline-grid; vertical-align: middle; width: 28px; height: 28px; margin: 0 8px 0 0; font-size: 12px; }
+.t5 td:nth-child(2) a { color: var(--ink); vertical-align: middle; }
+.t5 td:nth-child(1) { color: var(--accent); font-weight: 700; }
+.t5 td.muted { color: var(--muted); font-size: 12px; white-space: nowrap; }
+.t5 .num { text-align: right; font-variant-numeric: tabular-nums; }
+.t5 td.num { color: var(--ink); font-weight: 700; font-size: 15px; white-space: nowrap; }
+@media (max-width: 520px) { .t5 .c-n { width: 68px; } .t5 .c-t { width: 52px; } .t5 .c-v { width: 54px; } .t5 th { letter-spacing: 0; padding-left: 4px; padding-right: 4px; } .t5 td.muted { font-size: 11px; } }
+
+/* ---- contract line on the card, wide tables scroll, cards stack at phone width */
+.so-meta.so-con { color: var(--ink); }
+.tblwrap { overflow-x: auto; max-width: 100%; -webkit-overflow-scrolling: touch; }
+@media (max-width: 480px) {
+  .so-chart, .so-sec, .so-solo-grid > .box { max-width: 100%; min-width: 0; }
+  .so-card { padding: 10px 8px; }
+  .so-hs { width: 40px; height: 40px; }
+  .so-body { flex: 1 1 auto; }
+  .so-lines th, .so-lines td { padding-left: 6px; padding-right: 6px; }
+}
+
+/* ---- rich org-card (layout + palette tokens; the dark-ice glass look lives in ice.css). Size by level: NHL > AHL/ECHL > prospects. */
+.so-cards { grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 400px)); gap: 14px; align-items: stretch; justify-content: start; }
+.so-tier[data-tier="ahl"] .so-cards, .so-tier[data-tier="echl"] .so-cards { grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 340px)); gap: 12px; }
+.so-tier[data-tier="junior"] .so-cards, .so-tier[data-tier="college"] .so-cards, .so-tier[data-tier="europe"] .so-cards, .so-tier[data-tier="other"] .so-cards { grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 250px)); gap: 10px; }
+.org-card { display: flex; flex-direction: column; gap: 10px; min-width: 0; box-sizing: border-box; padding: 16px 18px 18px; color: var(--ink); text-decoration: none; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-2); overflow-wrap: anywhere; transition: border-color .15s, box-shadow .15s; }
+.org-card:hover { border-color: var(--accent); }
+.org-card.t-nhl { border-left: 3px solid var(--accent); min-height: 330px; padding: 20px 22px 22px; gap: 14px; }
+.org-card.t-ahl, .org-card.t-echl { min-height: 250px; padding: 14px 16px 16px; gap: 9px; }
+.org-card.t-junior, .org-card.t-college, .org-card.t-europe, .org-card.t-other { min-height: 180px; padding: 11px 12px 12px; gap: 7px; }
+.oc-head { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.oc-id { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1 1 auto; }
+.oc-photo { width: 56px; height: 56px; flex: none; border-radius: 50%; object-fit: cover; border: 2px solid var(--line); background: var(--surface-deep); }
+.oc-mono { display: grid; place-items: center; color: var(--muted); font-weight: 700; }
+.t-nhl .oc-photo { width: 76px; height: 76px; }
+.t-junior .oc-photo, .t-college .oc-photo, .t-europe .oc-photo, .t-other .oc-photo { width: 38px; height: 38px; }
+.oc-nm { font-weight: 700; font-size: 16px; line-height: 1.2; }
+.t-nhl .oc-nm { font-size: 22px; }
+.t-junior .oc-nm, .t-college .oc-nm, .t-europe .oc-nm, .t-other .oc-nm { font-size: 14px; }
+.oc-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.oc-level, .oc-bio { font-size: 12px; color: var(--muted); line-height: 1.3; }
+.oc-num { flex: none; align-self: flex-start; font-weight: 700; font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.t-nhl .oc-num { font-size: 22px; }
+.so-role.r-prospect { background: transparent; border: 1px solid var(--line); color: var(--muted); }
+.oc-stats { display: flex; flex-direction: column; gap: 5px; }
+.oc-sl { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.oc-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(66px, 1fr)); gap: 6px; }
+.oc-tile { display: flex; flex-direction: column; gap: 1px; padding: 7px 9px; background: var(--surface-deep); border: 1px solid var(--line); border-radius: 8px; min-width: 0; }
+.oc-tl { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.oc-tv { font-size: 18px; line-height: 1.15; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.t-nhl .oc-tv { font-size: 26px; }
+.t-junior .oc-tv, .t-college .oc-tv, .t-europe .oc-tv, .t-other .oc-tv { font-size: 15px; }
+.oc-tn { font-size: 10px; color: var(--muted); white-space: nowrap; }
+.oc-extras { display: flex; flex-wrap: wrap; gap: 6px; }
+.oc-chip { display: inline-flex; align-items: baseline; flex-wrap: wrap; gap: 4px; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-deep); font-size: 11px; color: var(--ink); }
+.oc-chip small { color: var(--muted); font-size: 10px; }
+.oc-cl { color: var(--muted); }
+.oc-form.hot { border-color: var(--accent); } .oc-form.hot b { color: var(--accent); }
+.oc-con { display: flex; flex-direction: column; gap: 5px; margin-top: auto; }
+.oc-yrs { display: flex; gap: 3px; }
+.oc-yr { flex: 1 1 0; max-width: 34px; height: 5px; border-radius: 3px; background: var(--line); }
+.oc-yr.on { background: var(--accent); }
+.oc-ct { font-size: 12px; color: var(--ink); }
+.oc-draft { font-size: 11px; color: var(--muted); }
+.oc-draft:first-of-type { margin-top: auto; }
+@media (max-width: 640px) {
+  .so-cards, .so-tier[data-tier] .so-cards { grid-template-columns: minmax(0, 1fr); }
+  .org-card, .org-card.t-nhl, .org-card.t-ahl, .org-card.t-echl { min-height: 0; }
+}
+
+/* ---- /leagues */
+.lg-intro { color: var(--muted); margin: 0 0 18px; }
+.lg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 16px; }
+.lg-card { display: flex; flex-direction: column; gap: 10px; padding: 20px 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-2); min-width: 0; }
+.lg-card[data-status="live"] { border-color: var(--accent); grid-column: 1 / -1; }
+.lg-card h2 { margin: 0; font-size: 26px; }
+.lg-card[data-status="coming-soon"] h2 { font-size: 22px; }
+.lg-sub { color: var(--muted); font-size: 13px; }
+.lg-names { display: flex; flex-wrap: wrap; gap: 6px; }
+.lg-names span { padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; font-size: 12px; color: var(--ink); }
+.lg-links { display: flex; flex-wrap: wrap; gap: 10px; }
+.lg-links a { padding: 8px 16px; border: 1px solid var(--accent); border-radius: 8px; color: var(--accent); font-weight: 600; text-decoration: none; }
+.lg-soon { align-self: flex-start; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; color: var(--muted); border: 1px dashed var(--line); }

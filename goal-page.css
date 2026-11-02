@@ -117,6 +117,24 @@ body.ice.inner.gp-body .page{max-width:1208px}
  .gp .lp-ico{display:none}.gp .lp-t{flex:1}
  .gp .gp-big{font-size:56px;line-height:56px}.gp .card-b>.c{padding:var(--s2)}.gp .gp-coach{padding:var(--s2)}.gp .gp-coach-l li{grid-template-columns:1fr 1fr}
  .gp .gp-tl-hint{display:none}.gp .gp-ev{grid-template-columns:56px minmax(0,1fr)}}
+/* PRO preview (hidden, ?pro=1 only) */
+.gp .gp-clip{position:relative;aspect-ratio:16/9;background:#000}
+.gp .gp-clip .still img,.gp .gp-clip .nostill{width:100%;height:100%;aspect-ratio:16/9;object-fit:cover}
+.gp .gp-clip video{position:absolute;inset:0;width:100%;height:100%;background:#000;display:block}
+.gp .gp-prev{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--s1);text-align:center;padding:var(--s2);background:rgba(8,12,18,.62);color:#fff}
+.gp .gp-prev b{font:700 18px/24px var(--body)}.gp .gp-prev span{font-size:13px;line-height:20px;opacity:.8}
+.gp .gp-clip.has-video .gp-prev,.gp .gp-clip.has-video .still{display:none}
+.gp .gp-tl-pro .gp-tl-track{cursor:pointer}.gp .gp-tl-pro .gp-tl-track::before{content:"";position:absolute;left:0;right:0;top:-16px;bottom:-16px}
+.gp .gp-tl-fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:2px;background:rgba(var(--accent-rgb),.55)}
+.gp .gp-tl-head-pos{position:absolute;top:-6px;left:0;width:2px;height:16px;background:var(--ink);transform:translateX(-1px);pointer-events:none}
+.gp button.gp-tm{all:unset;box-sizing:border-box;position:absolute;top:50%;transform:translate(-50%,-50%);cursor:pointer;z-index:1}
+.gp button.gp-tm::after{content:"";position:absolute;inset:-14px}
+.gp button.gp-tm:focus-visible i{outline:2px solid var(--accent);outline-offset:3px}
+.gp .gp-tl-pro.gp-novid .gp-tl-track,.gp .gp-tl-pro.gp-novid button.gp-tm{cursor:default}
+.gp .gp-coach-pro .gp-coach-l{margin-top:var(--s2)}
+.gp .gp-coach-open li{align-items:start;color:var(--ink)}.gp .gp-coach-open li>span{color:var(--muted)}
+.gp .gp-cn{display:block;font-size:14px;line-height:20px;color:var(--ink)}.gp .gp-cn+.gp-cn{margin-top:var(--s1)}
+.gp .gp-coach-none{margin:var(--s2) 0 0;font:600 15px/24px var(--body);color:var(--muted)}
 /* the goals index head */
 .gp .gpi{margin-bottom:var(--s4)}.gp .gpi h1{margin-top:var(--s1)}
 /* goal list on the goalie page + the goals index */

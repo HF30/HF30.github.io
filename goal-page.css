@@ -70,7 +70,7 @@ body.ice.inner.gp-body .page{max-width:1208px}
 .gp .rows .gp-num{font:400 24px/24px var(--disp)}
 .gp .rows .gp-rrv{font:600 16px/24px var(--disp)}
 .gp .row-sub{grid-column:1/-1;font-size:13px;line-height:20px;color:var(--muted);margin-top:4px}
-.gp .gp-soon{font:700 12px/24px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+
 .gp .tts{display:inline-flex;align-items:center;gap:var(--s1)}.gp .tts i{width:10px;height:10px;border-radius:50%}
 .gp .tts-red i{background:var(--red)}.gp .tts-yellow i{background:var(--yellow)}.gp .tts-green i{background:var(--green)}
 /* rink */

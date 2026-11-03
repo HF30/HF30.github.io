@@ -23,6 +23,7 @@ body.ice.inner.gp-body .page{max-width:1208px}
 .gp .card-h{display:flex;justify-content:space-between;align-items:flex-end;gap:var(--s3);flex-wrap:wrap;padding:var(--s4) var(--s4) var(--s3);border-bottom:1px solid var(--line)}
 .gp .kick{font:700 12px/16px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}.gp .kick a{text-decoration:none;border-bottom:1px solid rgba(var(--accent-rgb),.4)}
 .gp h1{font:700 40px/44px var(--body);font-stretch:70%;text-transform:uppercase;letter-spacing:0;margin-top:var(--s1)}
+.gp .gp-ps{font-weight:700;letter-spacing:.06em;color:#E0B84C}
 .gp .gp-meta{color:var(--muted);font-size:14px;line-height:20px;margin-top:var(--s1)}
 .gp .bugline{display:flex;gap:var(--s2);align-items:center;font:600 13px/20px var(--body);color:var(--muted);flex-wrap:wrap}
 .gp .sb{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:8px;overflow:hidden;color:var(--ink)}

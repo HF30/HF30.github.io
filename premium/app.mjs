@@ -1,34 +1,42 @@
+import {DIRECTORY_COLUMNS,formatDirectoryMetric,compareDirectoryRows} from './directory.mjs';
 const $ = (s, root=document) => root.querySelector(s);
 const $$ = (s,root=document) => [...root.querySelectorAll(s)];
-function filterGoalies() {
-  const query = ($('#goalie-search')?.value || '').toLowerCase().trim(), team = $('#team-filter')?.value || '', league = $('#league-filter')?.value || '', season = $('#season-filter')?.value || '';
-  let n = 0;
-  for (const row of $$('[data-goalie-row]')) {
-    let lines = []; try { lines = JSON.parse(row.dataset.lines || '[]'); } catch {}
-    const line = lines.find(x => (!league || x.league === league) && (!season || x.season === season));
-    row.hidden = !(line && row.dataset.name.includes(query) && (!team || row.dataset.team === team));
-    if (line) {
-      $('[data-row-gp]', row).textContent = line.gp ?? '—';
-      $('[data-row-svp]', row).textContent = Number.isFinite(line.svp) ? line.svp.toFixed(3).replace(/^0/, '') : '—';
-      $('[data-row-gaa]', row).textContent = Number.isFinite(line.gaa) ? line.gaa.toFixed(2) : '—';
-      $('[data-row-league]', row).textContent = line.league || 'NO CURRENT RECORD';
-      row.dataset.svp = line.svp ?? -1; row.dataset.gp = line.gp ?? 0;
-    }
-    if (!row.hidden) n++;
-  }
-  if ($('#directory-count')) $('#directory-count').textContent = `${n} goalie profile${n === 1 ? '' : 's'}`;
-  if ($('#directory-empty')) $('#directory-empty').hidden = n > 0;
-  sortGoalies();
+let directoryView='performance',directoryDirection='asc';
+const directoryRows=$$('[data-goalie-row]').map(row=>({row,id:row.dataset.id,name:row.dataset.displayName,lastName:row.dataset.lastName,metrics:JSON.parse(row.dataset.metrics||'{}'),base:JSON.parse(row.dataset.metrics||'{}'),lines:JSON.parse(row.dataset.lines||'[]')}));
+function filterGoalies(){
+ const query=($('#goalie-search')?.value||'').toLowerCase().trim(),team=$('#team-filter')?.value||'',league=$('#league-filter')?.value||'',season=$('#season-filter')?.value||'',gameType=$('#game-type-filter')?.value||'2';let count=0;
+ for(const entry of directoryRows){const {row,lines,base}=entry;
+ const line=lines.find(x=>(!league||x.league===league)&&(!season||x.season===season)&&(gameType==='other'?![1,2,3].includes(x.gameTypeId):String(x.gameTypeId??2)===gameType));
+ row.hidden=!(line&&row.dataset.name.includes(query)&&(!team||row.dataset.team===team));
+ if(line){const current=line.season===row.dataset.currentSeason&&line.league===row.dataset.currentLeague&&(line.gameTypeId??2)===2;
+ entry.metrics=Object.fromEntries(DIRECTORY_COLUMNS.map(c=>[c.key,current?base[c.key]:['gp','w','l','svp','gaa','sa','shutouts'].includes(c.key)?line[c.key]??null:null]));
+ for(const cell of $$('[data-directory-metric]',row))cell.textContent=formatDirectoryMetric(cell.dataset.directoryMetric,entry.metrics[cell.dataset.directoryMetric]);
+ $('[data-row-league]',row).textContent=line.league||'No record';}
+ if(!row.hidden)count++;
+ }
+ if($('#directory-count'))$('#directory-count').textContent=`${count} goalie profile${count===1?'':'s'}`;
+ if($('#directory-empty')){const empty=$('#directory-empty');empty.hidden=count>0;$('h3',empty).textContent='No records loaded for these filters';$('p',empty).textContent=gameType==='1'?'Preseason records are not loaded for this selection. Choose another game type, season or league.':'Try another name, game type, season or league.';}
+ sortGoalies();
 }
-function sortGoalies() {
-  const sort = $('#sort-goalies')?.value || 'name', rows = $$('[data-goalie-row]');
-  rows.sort((a,b) => sort === 'name' ? a.dataset.name.localeCompare(b.dataset.name) : Number(b.dataset[sort])-Number(a.dataset[sort]) || a.dataset.name.localeCompare(b.dataset.name));
-  for (const row of rows) $('#goalie-rows').append(row);
+function sortGoalies(){
+ const key=$('#sort-goalies')?.value||'name';directoryRows.sort((a,b)=>compareDirectoryRows(a,b,key,directoryDirection));
+ for(const {row} of directoryRows)$('#goalie-rows').append(row);
+ for(const th of $$('[data-sort-header]')){const active=th.dataset.sortHeader===key;th.setAttribute('aria-sort',active?(directoryDirection==='asc'?'ascending':'descending'):'none');$('[data-sort-arrow]',th).textContent=active?(directoryDirection==='asc'?'↑':'↓'):'';}
+ const direction=$('#directory-direction');if(direction)direction.textContent=key==='name'?(directoryDirection==='asc'?'A → Z':'Z → A'):(directoryDirection==='asc'?'Low → high':'High → low');
 }
-$('#goalie-search')?.addEventListener('input', filterGoalies);
-for (const id of ['team-filter','league-filter','season-filter']) $('#'+id)?.addEventListener('change', filterGoalies);
-$('#sort-goalies')?.addEventListener('change', sortGoalies);
-if ($('#goalie-rows')) filterGoalies();
+function setDirectoryView(view){directoryView=view;for(const cell of $$('[data-views]'))cell.hidden=!cell.dataset.views.split(' ').includes(view);
+ for(const button of $$('[data-directory-view]')){const active=button.dataset.directoryView===view;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));}
+ const notes={performance:'Season records and GSAx cover the selected league and season. Stolen/blown totals cover eligible captured starts.',starts:'QS uses actual save percentage. Every graded appearance has one provisional performance tier; stolen/blown are separate impact flags. Totals cover available games, not necessarily the full season.',tracking:'Selected reviewed goals only. Depth and time are medians excluding estimated readings. Sequence counts describe reviewed goals, not all-shot tendencies.'};
+ if($('#directory-scope'))$('#directory-scope').textContent=notes[view];}
+function setDirectorySort(key,toggle=false){const previous=$('#sort-goalies').value;$('#sort-goalies').value=key;directoryDirection=toggle&&previous===key?(directoryDirection==='asc'?'desc':'asc'):(key==='name'||key==='gaa'?'asc':'desc');
+ const column=DIRECTORY_COLUMNS.find(c=>c.key===key);if(column&&!column.views.includes(directoryView))setDirectoryView(column.views[0]);sortGoalies();}
+$('#goalie-search')?.addEventListener('input',filterGoalies);
+for(const id of ['team-filter','league-filter','season-filter','game-type-filter'])$('#'+id)?.addEventListener('change',filterGoalies);
+$('#sort-goalies')?.addEventListener('change',event=>setDirectorySort(event.target.value));
+$('#directory-direction')?.addEventListener('click',()=>{directoryDirection=directoryDirection==='asc'?'desc':'asc';sortGoalies();});
+for(const button of $$('[data-directory-sort]'))button.addEventListener('click',()=>setDirectorySort(button.dataset.directorySort,true));
+for(const button of $$('[data-directory-view]'))button.addEventListener('click',()=>setDirectoryView(button.dataset.directoryView));
+if($('#goalie-rows'))filterGoalies();
 const finite=x=>typeof x==='number'&&Number.isFinite(x);
 const number=(x,d=0)=>finite(x)?x.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
 const profile=(()=>{try{return JSON.parse($('#profile-data')?.textContent||'null')}catch{return null}})();
@@ -50,7 +58,7 @@ function selectPlay(key,{updateUrl=true}={}){
  setText('#selected-date',[e.date,e.opponent].filter(Boolean).join(' · '));setText('#selected-play-type',e.playType||'');
  setText('#selected-depth',finite(e.depthFt)?number(e.depthFt,1)+' ft':'—');setText('#selected-depth-status',finite(e.depthFt)?e.depthEstimated?'Estimated reading':'Measured reading':'Unavailable');
  setText('#selected-sight',e.sight||'Unclassified');setText('#selected-timing',finite(e.timingSeconds)?number(e.timingSeconds,2)+' s':'—');setText('#selected-timing-status',finite(e.timingSeconds)?e.timingEstimated?'Estimated reading':'Available before release':'Unavailable');
- const deep=$('#selected-deep-link');if(deep){deep.href=e.url||'/goals/';deep.hidden=!e.url}
+ const deep=$('#selected-deep-link');if(deep){deep.href=profile.reviewPage?`/goalie/${profile.id}/?play=${encodeURIComponent(e.key)}#film`:e.url||'/goals/';deep.textContent=profile.reviewPage?'Open goalie profile ↗':'Open full review ↗';deep.hidden=!e.url}
  const video=$('#selected-video-link'),url=safeVideo(e.videoUrl||e.externalVideoUrl);if(video){video.hidden=!url;if(url)video.href=url;else video.removeAttribute('href')}
  const seq=$('#selected-sequence');if(seq){seq.replaceChildren();if(e.royalRoadCounts){seq.append(chip(`${number(e.royalRoadCounts.pass||0)} royal-road passes`),chip(`${number(e.royalRoadCounts.carry||0)} royal-road carries`))}else seq.append(chip('Royal-road classification unavailable'));
   for(const p of e.passSequences||[])if(p.direction)seq.append(chip(`Pass ${p.n}: ${p.direction}${p.side?' · '+p.side:''}`));
@@ -85,8 +93,11 @@ if(profile&&$('#playlist-items')){
 for(const button of $$('[data-zone-mode]'))button.addEventListener('click',()=>{const scope=button.closest('.shot-profile'),mode=button.dataset.zoneMode;for(const b of $$('[data-zone-mode]',scope)){b.classList.toggle('active',b===button);b.setAttribute('aria-pressed',String(b===button))}for(const label of $$('[data-zone-value]',scope)){const raw=label.dataset[mode];label.textContent=raw===''?'—':mode==='svp'?(Number(raw)*100).toFixed(1)+'%':number(Number(raw))}});
 function selectZone(id){for(const e of $$('[data-zone],[data-zone-row]'))e.classList.toggle('active',(e.dataset.zone||e.dataset.zoneRow)===id)}
 for(const el of $$('[data-zone],[data-zone-row]')){const id=el.dataset.zone||el.dataset.zoneRow;el.addEventListener('click',()=>selectZone(id));el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectZone(id)}})}
-function filterGames(){const grade=$('#game-grade')?.value||'',order=$('#game-sort')?.value||'newest';const rows=$$('[data-game-row]');let count=0;for(const row of rows){row.hidden=grade==='traditional-quality'?row.dataset.quality!=='true':grade==='traditional-bad'?row.dataset.reallyBad!=='true':grade==='stolen'?row.dataset.stolen!=='true':grade==='blown'?row.dataset.blown!=='true':grade?row.dataset.grade!==grade:false;if(!row.hidden)count++}rows.sort((a,b)=>order==='oldest'?a.dataset.date.localeCompare(b.dataset.date):order==='gsax'?(b.dataset.gsax===''?-Infinity:Number(b.dataset.gsax))-(a.dataset.gsax===''?-Infinity:Number(a.dataset.gsax)):b.dataset.date.localeCompare(a.dataset.date));for(const row of rows)$('#game-rows').append(row);setText('#game-count',`${count} games`);if($('#game-empty'))$('#game-empty').hidden=count>0;for(const button of $$('[data-grade-filter]'))button.classList.toggle('active',button.dataset.gradeFilter===grade)}
+function filterGames(){const grade=$('#game-grade')?.value||'',order=$('#game-sort')?.value||'newest';const rows=$$('[data-game-row]');let count=0;for(const row of rows){row.hidden=grade==='low-sample'?row.dataset.lowSample!=='true':grade==='traditional-quality'?row.dataset.quality!=='true':grade==='traditional-bad'?row.dataset.reallyBad!=='true':grade==='stolen'?row.dataset.stolen!=='true':grade==='blown'?row.dataset.blown!=='true':grade?row.dataset.grade!==grade:false;if(!row.hidden)count++}rows.sort((a,b)=>order==='oldest'?a.dataset.date.localeCompare(b.dataset.date):order==='gsax'?(b.dataset.gsax===''?-Infinity:Number(b.dataset.gsax))-(a.dataset.gsax===''?-Infinity:Number(a.dataset.gsax)):b.dataset.date.localeCompare(a.dataset.date));for(const row of rows)$('#game-rows').append(row);setText('#game-count',`${count} games`);if($('#game-empty'))$('#game-empty').hidden=count>0;for(const button of $$('[data-grade-filter]'))button.classList.toggle('active',button.dataset.gradeFilter===grade)}
 for(const id of ['game-grade','game-sort'])$('#'+id)?.addEventListener('change',filterGames);for(const button of $$('[data-grade-filter]'))button.addEventListener('click',()=>{$('#game-grade').value=$('#game-grade').value===button.dataset.gradeFilter?'':button.dataset.gradeFilter;filterGames()});
 for(const button of $$('[data-print]'))button.addEventListener('click',()=>window.print());
 for(const img of $$('img'))img.addEventListener('error',()=>{img.hidden=true;if(img.id==='selected-still'&&$('#viewer-empty'))$('#viewer-empty').hidden=false});
 document.addEventListener('keydown',e=>{if(e.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)&&$('#goalie-search')){e.preventDefault();$('#goalie-search').focus()}});
+
+function filterLibrary(){const query=($('#library-search')?.value||'').toLowerCase().trim(),goalie=$('#library-goalie')?.value||'',sight=$('#library-sight')?.value||'',sequence=$('#library-sequence')?.value||'';let count=0;for(const play of $$('[data-library-play]')){play.hidden=!((!query||play.dataset.search.includes(query))&&(!goalie||play.dataset.goalie===goalie)&&(!sight||play.dataset.sight===sight)&&(!sequence||play.dataset.sequence.split(' ').includes(sequence)));if(!play.hidden)count++;}if($('#library-count'))$('#library-count').textContent=`${count} plays`;if($('#library-empty'))$('#library-empty').hidden=count>0;}
+$('#library-search')?.addEventListener('input',filterLibrary);for(const id of ['library-goalie','library-sight','library-sequence'])$('#'+id)?.addEventListener('change',filterLibrary);if($('#library-count'))filterLibrary();

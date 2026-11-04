@@ -16,7 +16,28 @@ function filterGoalies(){
  }
  if($('#directory-count'))$('#directory-count').textContent=`${count} goalie profile${count===1?'':'s'}`;
  if($('#directory-empty')){const empty=$('#directory-empty');empty.hidden=count>0;$('h3',empty).textContent='No records loaded for these filters';$('p',empty).textContent=gameType==='1'?'Preseason records are not loaded for this selection. Choose another game type, season or league.':'Try another name, game type, season or league.';}
+ renderLeaders();
  sortGoalies();
+}
+function renderLeaders(){
+ const grid=$('#goalie-leaders');if(!grid)return;
+ const categories=[['gsax','Goals saved above expected','desc'],['svp','Save percentage','desc'],['gaa','Goals against average','asc'],['w','Wins','desc'],['shutouts','Shutouts','desc'],['elite','Elite appearances','desc']];
+ const scope=[$('#league-filter')?.value||'Selected leagues',$('#season-filter')?.value,$('#game-type-filter')?.selectedOptions[0]?.textContent].filter(Boolean).join(' · ');
+ $('#leaders-scope').textContent=scope+' · SV% and GAA: minimum 150 shots faced. Elite grades are provisional and cover captured games.';
+ grid.replaceChildren();
+ for(const [key,label,direction] of categories){
+  const ranked=directoryRows.filter(e=>!e.row.hidden&&typeof e.metrics[key]==='number'&&Number.isFinite(e.metrics[key])&&(!['svp','gaa'].includes(key)||e.metrics.sa>=150)).sort((a,b)=>compareDirectoryRows(a,b,key,direction)).slice(0,3);
+  const card=document.createElement('article');card.className='leader-card';
+  const heading=document.createElement('button');heading.className='leader-category';heading.textContent=label+' ↗';heading.dataset.leaderSort=key;heading.addEventListener('click',()=>{setDirectorySort(key);$('#directory').scrollIntoView({behavior:'smooth'});});card.append(heading);
+  if(!ranked.length){const empty=document.createElement('p');empty.className='leader-unavailable';empty.textContent='No qualifying records';card.append(empty);}
+  ranked.forEach((entry,i)=>{
+   const link=document.createElement('a');link.className=i===0?'leader-first':'leader-runner';link.href='/goalie/'+encodeURIComponent(entry.id)+'/';
+   const rank=document.createElement('span');rank.className='leader-rank';rank.textContent=String(1+directoryRows.filter(e=>!e.row.hidden&&typeof e.metrics[key]==='number'&&Number.isFinite(e.metrics[key])&&(!['svp','gaa'].includes(key)||e.metrics.sa>=150)&&(direction==='asc'?e.metrics[key]<entry.metrics[key]:e.metrics[key]>entry.metrics[key])).length);link.append(rank);
+   if(i===0){const portrait=entry.row.querySelector('img');if(portrait){const image=portrait.cloneNode();image.alt='';image.className='leader-portrait';link.append(image);}}
+   const name=document.createElement('span');name.className='leader-name';name.textContent=entry.name;const team=document.createElement('small');team.textContent=entry.row.dataset.team||'';name.append(team);link.append(name);
+   const value=document.createElement('strong');value.textContent=formatDirectoryMetric(key,entry.metrics[key]);link.append(value);card.append(link);
+  });grid.append(card);
+ }
 }
 function sortGoalies(){
  const key=$('#sort-goalies')?.value||'name';directoryRows.sort((a,b)=>compareDirectoryRows(a,b,key,directoryDirection));

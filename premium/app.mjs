@@ -1,27 +1,5 @@
-const $ = (s, root = document) => root.querySelector(s);
-const $$ = (s, root = document) => [...root.querySelectorAll(s)];
-
-function activateTab(name, focus = false) {
-  const tab = $(`[data-tab="${name}"]`);
-  if (!tab) return;
-  for (const t of $$('[data-tab]')) { const active = t === tab; t.setAttribute('aria-selected', String(active)); t.tabIndex = active ? 0 : -1; }
-  for (const panel of $$('.tab-panel')) panel.hidden = panel.id !== `panel-${name}`;
-  if (focus) tab.focus();
-}
-for (const tab of $$('[data-tab]')) tab.addEventListener('click', () => { activateTab(tab.dataset.tab); history.replaceState(null, '', `#${tab.dataset.tab}`); });
-for (const link of $$('[data-tab-link]')) link.addEventListener('click', (e) => { e.preventDefault(); activateTab(link.dataset.tabLink); history.replaceState(null, '', `#${link.dataset.tabLink}`); $('.profile-nav')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
-$('.tab-list')?.addEventListener('keydown', (e) => {
-  if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(e.key)) return;
-  const tabs = $$('[data-tab]'), i = tabs.indexOf(document.activeElement); if (i < 0) return;
-  e.preventDefault(); const n = e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : (i + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
-  activateTab(tabs[n].dataset.tab, true); history.replaceState(null, '', `#${tabs[n].dataset.tab}`);
-});
-if (location.hash) activateTab(location.hash.slice(1));
-else activateTab('overview');
-window.addEventListener('hashchange', () => activateTab(location.hash.slice(1) || 'overview'));
-for (const button of $$('[data-print], #print-report')) button.addEventListener('click', () => { document.body.classList.add('print-all'); window.print(); });
-window.addEventListener('afterprint', () => document.body.classList.remove('print-all'));
-
+const $ = (s, root=document) => root.querySelector(s);
+const $$ = (s,root=document) => [...root.querySelectorAll(s)];
 function filterGoalies() {
   const query = ($('#goalie-search')?.value || '').toLowerCase().trim(), team = $('#team-filter')?.value || '', league = $('#league-filter')?.value || '', season = $('#season-filter')?.value || '';
   let n = 0;
@@ -51,23 +29,64 @@ $('#goalie-search')?.addEventListener('input', filterGoalies);
 for (const id of ['team-filter','league-filter','season-filter']) $('#'+id)?.addEventListener('change', filterGoalies);
 $('#sort-goalies')?.addEventListener('change', sortGoalies);
 if ($('#goalie-rows')) filterGoalies();
-for (const button of $$('[data-zone-mode]')) button.addEventListener('click', () => {
-  const scope = button.closest('.shot-profile'), mode = button.dataset.zoneMode;
-  for (const b of $$('[data-zone-mode]', scope)) { b.classList.toggle('active',b===button); b.setAttribute('aria-pressed',String(b===button)); }
-  for (const label of $$('[data-zone-value]', scope)) { const v = label.dataset[mode]; label.textContent = v === '' ? '—' : mode === 'svp' ? `${(Number(v)*100).toFixed(1)}%` : Number(v).toLocaleString(); }
-});
-document.addEventListener('keydown', (e) => { if (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) && $('#goalie-search')) { e.preventDefault(); $('#goalie-search').focus(); } });
-
-function selectZone(zone, scope) {
-  for (const row of $$('[data-zone-row]', scope)) row.classList.toggle('active', row.dataset.zoneRow === zone);
-  for (const shape of $$('[data-zone]', scope)) shape.classList.toggle('active', shape.dataset.zone === zone);
+const finite=x=>typeof x==='number'&&Number.isFinite(x);
+const number=(x,d=0)=>finite(x)?x.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
+const profile=(()=>{try{return JSON.parse($('#profile-data')?.textContent||'null')}catch{return null}})();
+const evidence=profile?.evidence||[], byKey=new Map(evidence.map(e=>[e.key,e]));
+let selectedKey=evidence[0]?.key, matching=[...evidence];
+const gameKey=e=>String(e.gameId??e.key?.split('_')[0]??e.date+'|'+e.opponent);
+const setText=(selector,text)=>{const el=$(selector);if(el)el.textContent=text};
+function fillOptions(id,entries){const sel=$(id);if(!sel)return;for(const [value,label] of entries){const option=document.createElement('option');option.value=value;option.textContent=label;sel.append(option)}}
+function uniqueOptions(field,label=field){return [...new Map(evidence.filter(e=>e[field]).map(e=>[e[field],e[label]||e[field]])).entries()].sort((a,b)=>String(a[1]).localeCompare(String(b[1])))}
+function safeVideo(value){try{const u=new URL(value);return u.protocol==='https:'&&(u.hostname==='nhl.com'||u.hostname.endsWith('.nhl.com'))&&u.pathname.startsWith('/video/')?u.href:null}catch{return null}}
+function sequenceMatch(e,value){if(!value)return true;if(value==='behind-net')return e.behindNet!==null&&e.behindNet!==undefined&&e.behindNet.crossings>0;if(value==='pass'||value==='carry')return(e.royalRoadCounts?.[value]||0)>0;return e.passSequences?.some(p=>p.direction===value)||false}
+function chip(text){const span=document.createElement('span');span.className='sequence-chip';span.textContent=text;return span}
+function selectPlay(key,{updateUrl=true}={}){
+ const e=byKey.get(key);if(!e)return;selectedKey=key;
+ const still=$('#selected-still'),empty=$('#viewer-empty');
+ if(still){still.hidden=!e.still;if(e.still)still.src=e.still;else still.removeAttribute('src')}
+ if(empty)empty.hidden=!!e.still;
+ setText('#selected-title',e.title||e.shooter||'Goal review');
+ setText('#selected-date',[e.date,e.opponent].filter(Boolean).join(' · '));setText('#selected-play-type',e.playType||'');
+ setText('#selected-depth',finite(e.depthFt)?number(e.depthFt,1)+' ft':'—');setText('#selected-depth-status',finite(e.depthFt)?e.depthEstimated?'Estimated reading':'Measured reading':'Unavailable');
+ setText('#selected-sight',e.sight||'Unclassified');setText('#selected-timing',finite(e.timingSeconds)?number(e.timingSeconds,2)+' s':'—');setText('#selected-timing-status',finite(e.timingSeconds)?e.timingEstimated?'Estimated reading':'Available before release':'Unavailable');
+ const deep=$('#selected-deep-link');if(deep){deep.href=e.url||'/goals/';deep.hidden=!e.url}
+ const video=$('#selected-video-link'),url=safeVideo(e.videoUrl||e.externalVideoUrl);if(video){video.hidden=!url;if(url)video.href=url;else video.removeAttribute('href')}
+ const seq=$('#selected-sequence');if(seq){seq.replaceChildren();if(e.royalRoadCounts){seq.append(chip(`${number(e.royalRoadCounts.pass||0)} royal-road passes`),chip(`${number(e.royalRoadCounts.carry||0)} royal-road carries`))}else seq.append(chip('Royal-road classification unavailable'));
+  for(const p of e.passSequences||[])if(p.direction)seq.append(chip(`Pass ${p.n}: ${p.direction}${p.side?' · '+p.side:''}`));
+  if(e.behindNet!=null)seq.append(chip(`${number(e.behindNet.crossings||0)} behind-net crossings`));else seq.append(chip('Behind-net classification unavailable'));
+  if(e.strength)seq.append(chip(e.strength));
+ }
+ for(const button of $$('[data-play-key]')){const active=button.dataset.playKey===key;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active))}
+ const position=matching.findIndex(x=>x.key===key);setText('#playlist-position',position>=0?`${position+1} / ${matching.length}`:'Selected play outside filter');
+ if($('#previous-play'))$('#previous-play').disabled=position<=0;
+ if($('#next-play'))$('#next-play').disabled=position<0||position>=matching.length-1;
+ if(updateUrl){const u=new URL(location.href);u.searchParams.set('play',key);history.replaceState(null,'',u)}
 }
-for (const section of $$('.shot-profile')) {
-  for (const row of $$('[data-zone-row]', section)) row.addEventListener('click', () => selectZone(row.dataset.zoneRow, section));
-  for (const shape of $$('[data-zone]', section)) {
-    shape.addEventListener('click', () => selectZone(shape.dataset.zone, section));
-    shape.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectZone(shape.dataset.zone, section); } });
-  }
+function filterPlaylist({selectFirst=true}={}){
+ const q=($('#playlist-search')?.value||'').trim().toLowerCase(),game=$('#film-game')?.value||'',opponent=$('#film-opponent')?.value||'',type=$('#film-type')?.value||'',sight=$('#film-sight')?.value||'',sequence=$('#film-sequence')?.value||'',strength=$('#film-strength')?.value||'',order=$('#film-sort')?.value||'newest';
+ matching=evidence.filter(e=>(!q||[e.title,e.shooter,e.opponent,e.gameLabel,e.playType,e.date,e.strength].join(' ').toLowerCase().includes(q))&&(!game||gameKey(e)===game)&&(!opponent||e.opponent===opponent)&&(!type||e.playType===type)&&(!sight||(sight==='unknown'?!e.sight:e.sight===sight))&&sequenceMatch(e,sequence)&&(!strength||e.strength===strength));
+ matching.sort((a,b)=>order==='oldest'?String(a.date).localeCompare(String(b.date)):order==='depth'?(finite(b.depthFt)?b.depthFt:-Infinity)-(finite(a.depthFt)?a.depthFt:-Infinity):order==='timing'?(finite(a.timingSeconds)?a.timingSeconds:Infinity)-(finite(b.timingSeconds)?b.timingSeconds:Infinity):String(b.date).localeCompare(String(a.date)));
+ const keys=new Set(matching.map(e=>e.key));for(const button of $$('[data-play-key]'))button.hidden=!keys.has(button.dataset.playKey);
+ for(const e of matching){const button=$$('[data-play-key]').find(b=>b.dataset.playKey===e.key);if(button)$('#playlist-items').append(button)}
+ setText('#playlist-count',`${matching.length} of ${evidence.length} plays`);if($('#playlist-empty'))$('#playlist-empty').hidden=matching.length>0;
+ if(selectFirst&&!keys.has(selectedKey)&&matching.length)selectPlay(matching[0].key);else if(selectedKey)selectPlay(selectedKey,{updateUrl:false});
 }
-$('#film-search')?.addEventListener('input', (e) => { const q = e.target.value.toLowerCase().trim(); for (const card of $$('#panel-film .film-card')) card.hidden = !card.textContent.toLowerCase().includes(q); });
-for (const img of $$('img')) img.addEventListener('error', () => { img.hidden = true; });
+if(profile&&$('#playlist-items')){
+ fillOptions('#film-game',[...new Map(evidence.map(e=>[gameKey(e),e.gameLabel||[e.date,e.opponent].filter(Boolean).join(' · ')])).entries()]);fillOptions('#film-opponent',uniqueOptions('opponent'));fillOptions('#film-type',uniqueOptions('playType'));fillOptions('#film-strength',uniqueOptions('strength'));
+ for(const id of ['film-game','film-opponent','film-type','film-sight','film-sequence','film-strength','film-sort'])$('#'+id)?.addEventListener('change',()=>filterPlaylist());$('#playlist-search')?.addEventListener('input',()=>filterPlaylist());
+ for(const button of $$('[data-play-key]'))button.addEventListener('click',()=>selectPlay(button.dataset.playKey));
+ $('#playlist-clear')?.addEventListener('click',()=>{for(const id of ['film-game','film-opponent','film-type','film-sight','film-sequence','film-strength'])$('#'+id).value='';$('#playlist-search').value='';filterPlaylist()});
+ $('#previous-play')?.addEventListener('click',()=>{const i=matching.findIndex(e=>e.key===selectedKey);if(i>0)selectPlay(matching[i-1].key)});$('#next-play')?.addEventListener('click',()=>{const i=matching.findIndex(e=>e.key===selectedKey);if(i>=0&&i<matching.length-1)selectPlay(matching[i+1].key)});
+ for(const button of $$('[data-sequence-filter]'))button.addEventListener('click',()=>{$('#film-sequence').value=button.dataset.sequenceFilter;filterPlaylist();$('#film').scrollIntoView({behavior:'smooth'})});
+ for(const button of $$('[data-game-film]'))button.addEventListener('click',()=>{$('#film-game').value=button.dataset.gameFilm;filterPlaylist();$('#film').scrollIntoView({behavior:'smooth'})});
+ filterPlaylist({selectFirst:false});selectPlay(new URLSearchParams(location.search).get('play')||selectedKey,{updateUrl:false});
+}
+for(const button of $$('[data-zone-mode]'))button.addEventListener('click',()=>{const scope=button.closest('.shot-profile'),mode=button.dataset.zoneMode;for(const b of $$('[data-zone-mode]',scope)){b.classList.toggle('active',b===button);b.setAttribute('aria-pressed',String(b===button))}for(const label of $$('[data-zone-value]',scope)){const raw=label.dataset[mode];label.textContent=raw===''?'—':mode==='svp'?(Number(raw)*100).toFixed(1)+'%':number(Number(raw))}});
+function selectZone(id){for(const e of $$('[data-zone],[data-zone-row]'))e.classList.toggle('active',(e.dataset.zone||e.dataset.zoneRow)===id)}
+for(const el of $$('[data-zone],[data-zone-row]')){const id=el.dataset.zone||el.dataset.zoneRow;el.addEventListener('click',()=>selectZone(id));el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectZone(id)}})}
+function filterGames(){const grade=$('#game-grade')?.value||'',order=$('#game-sort')?.value||'newest';const rows=$$('[data-game-row]');let count=0;for(const row of rows){row.hidden=grade==='traditional-quality'?row.dataset.quality!=='true':grade==='traditional-bad'?row.dataset.reallyBad!=='true':grade==='stolen'?row.dataset.stolen!=='true':grade==='blown'?row.dataset.blown!=='true':grade?row.dataset.grade!==grade:false;if(!row.hidden)count++}rows.sort((a,b)=>order==='oldest'?a.dataset.date.localeCompare(b.dataset.date):order==='gsax'?(b.dataset.gsax===''?-Infinity:Number(b.dataset.gsax))-(a.dataset.gsax===''?-Infinity:Number(a.dataset.gsax)):b.dataset.date.localeCompare(a.dataset.date));for(const row of rows)$('#game-rows').append(row);setText('#game-count',`${count} games`);if($('#game-empty'))$('#game-empty').hidden=count>0;for(const button of $$('[data-grade-filter]'))button.classList.toggle('active',button.dataset.gradeFilter===grade)}
+for(const id of ['game-grade','game-sort'])$('#'+id)?.addEventListener('change',filterGames);for(const button of $$('[data-grade-filter]'))button.addEventListener('click',()=>{$('#game-grade').value=$('#game-grade').value===button.dataset.gradeFilter?'':button.dataset.gradeFilter;filterGames()});
+for(const button of $$('[data-print]'))button.addEventListener('click',()=>window.print());
+for(const img of $$('img'))img.addEventListener('error',()=>{img.hidden=true;if(img.id==='selected-still'&&$('#viewer-empty'))$('#viewer-empty').hidden=false});
+document.addEventListener('keydown',e=>{if(e.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)&&$('#goalie-search')){e.preventDefault();$('#goalie-search').focus()}});
